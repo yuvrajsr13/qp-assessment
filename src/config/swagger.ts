@@ -185,7 +185,7 @@ const swaggerDefinition: OpenAPIV3.Document = {
               'application/json': {
                 schema: {
                   type: 'array',
-                  items: { $ref: '#/components/schemas/Grocery' },
+                  items: { $ref: '#/components/schemas/GroceryCreate' },
                 },
               },
             },

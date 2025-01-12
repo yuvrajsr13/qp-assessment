@@ -15,11 +15,23 @@ const app = express();
 
 app.use(bodyParser.json());
 
-// Swagger setup
-app.use('/', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// API Routes
+app.use('/admin', adminRoutes); // Admin routes
+app.use('/user', userRoutes);   // User routes
 
-// Routes
-app.use('/admin', adminRoutes);
-app.use('/user', userRoutes);
+// Swagger UI explicitly to serve at /api-docs
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// Handle the root route explicitly
+app.get('/', (req, res) => {
+  res.status(200).send({
+    message: 'Welcome to the Grocery API! Visit /api-docs for API documentation.',
+  });
+});
+
+// Fallback for unmatched routes
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
 
 export default app;
