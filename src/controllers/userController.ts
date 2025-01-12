@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Grocery from '../models/grocery';
+import { Op } from 'sequelize';
 
 // Interface for OrderResponse
 interface OrderResponse {
@@ -11,8 +12,20 @@ interface OrderResponse {
 // View available groceries
 export const getAvailableGroceries = async (_req: Request, res: Response): Promise<void> => {
   try {
-    const groceries = await Grocery.findAll({ where: { inventory: { gt: 0 } } });
-    res.status(200).json(groceries);
+    const groceries = await Grocery.findAll({
+      where: {
+        inventory: { [Op.gt]: 0 },
+      },
+    });
+
+    const response = groceries.map((grocery) => ({
+      id: grocery.id,
+      name: grocery.name,
+      price: grocery.price,
+      inventory: grocery.inventory,
+    }));
+
+    res.status(200).json(response);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch available groceries' });
   }
