@@ -15,10 +15,19 @@ const swaggerDefinition: OpenAPIV3.Document = {
   ],
   components: {
     schemas: {
-      Grocery: {
+      GroceryCreate: { // Schema for POST request
         type: 'object',
         properties: {
-          id: { type: 'integer' },
+          name: { type: 'string' },
+          price: { type: 'number' },
+          inventory: { type: 'integer' },
+        },
+        required: ['name', 'price', 'inventory'],
+      },
+      GroceryUpdate: { // Schema for PUT request
+        type: 'object',
+        properties: {
+          id: { type: 'integer' }, // Required for updates
           name: { type: 'string' },
           price: { type: 'number' },
           inventory: { type: 'integer' },
@@ -56,6 +65,115 @@ const swaggerDefinition: OpenAPIV3.Document = {
     },
   },
   paths: {
+    // Admin routes
+    '/admin/add': {
+      post: {
+        tags: ['Admin'],
+        summary: 'Add a new grocery item',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/GroceryCreate' },
+            },
+          },
+        },
+        responses: {
+          201: { description: 'Grocery item added successfully' },
+        },
+      },
+    },
+    '/admin/view': {
+      get: {
+        tags: ['Admin'],
+        summary: 'View all grocery items',
+        responses: {
+          200: {
+            description: 'List of groceries',
+            content: {
+              'application/json': {
+                schema: { type: 'array', items: { $ref: '#/components/schemas/GroceryUpdate' } },
+              },
+            },
+          },
+        },
+      },
+    },
+    '/admin/update/{id}': {
+      put: {
+        tags: ['Admin'],
+        summary: 'Update grocery details',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'integer' },
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/GroceryUpdate' },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Grocery details updated successfully' },
+        },
+      },
+    },
+    '/admin/delete/{id}': {
+      delete: {
+        tags: ['Admin'],
+        summary: 'Remove a grocery item',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'integer' },
+          },
+        ],
+        responses: {
+          204: { description: 'Grocery item removed successfully' },
+        },
+      },
+    },
+    '/admin/inventory/{id}': {
+      patch: {
+        tags: ['Admin'],
+        summary: 'Update inventory levels of a grocery item',
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: { type: 'integer' },
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  inventory: { type: 'integer' },
+                },
+                required: ['inventory'],
+              },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Inventory updated successfully' },
+        },
+      },
+    },
+
+    // User routes
     '/user/available': {
       get: {
         tags: ['User'],
